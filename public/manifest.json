@@ -1,6 +1,6 @@
 {
-  "name": "Akhil Medical",
-  "short_name": "AkhilMed",
+  "name": "Akhil Medical Store",
+  "short_name": "AMS",
   "description": "Medical Store Management",
   "start_url": "/",
   "display": "standalone",

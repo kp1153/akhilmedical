@@ -31,6 +31,7 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="Akhil Medical" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
+        <link rel="icon" href="/favicon.ico" />
       </head>
       <body className={`${geist.variable} ${geistMono.variable} antialiased`}>
         <div className="flex min-h-screen">
