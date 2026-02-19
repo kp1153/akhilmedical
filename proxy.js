@@ -6,6 +6,10 @@ export function proxy(request) {
   if (
     pathname === '/login' ||
     pathname === '/login/' ||
+    pathname === '/' ||
+    pathname === '/about' ||
+    pathname === '/services' ||
+    pathname === '/contact' ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
     pathname.includes('.')

@@ -44,9 +44,9 @@ export default function RootLayout({ children }) {
               <p className="text-xs text-blue-200 mt-1">akhilmedical.store</p>
             </div>
             <nav className="flex flex-col gap-1 p-3 flex-1">
-              <Link href="/" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-600 transition">
-                <span>🏠</span><span>Dashboard</span>
-              </Link>
+          <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-600 transition">
+           <span>🏠</span><span>Dashboard</span>
+          </Link>
               <Link href="/sales/new" className="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 transition">
                 <span>🧾</span><span>New Bill</span>
               </Link>
