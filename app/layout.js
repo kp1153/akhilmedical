@@ -65,6 +65,9 @@ export default function RootLayout({ children }) {
               <Link href="/purchases/new" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-600 transition">
                 <span>📦</span><span>New Purchase</span>
               </Link>
+              <Link href="/purchases" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-600 transition">
+             <span>📜</span><span>Purchase History</span>
+             </Link>
               <Link href="/report" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-600 transition">
                 <span>📊</span><span>Report</span>
               </Link>
