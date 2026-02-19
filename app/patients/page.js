@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { patients, transactions, payments } from "@/lib/schema";
-import { sql } from "drizzle-orm";
+import { patients, payments, sales } from "@/lib/schema";
+import { eq, sql } from "drizzle-orm";
 
 export default async function PatientsList({ searchParams }) {
   const { q } = await searchParams;
 
   const allPatients = await db.select().from(patients).orderBy(patients.name);
+
+  const allSales = await db.select().from(sales);
+  const allPayments = await db.select().from(payments);
 
   const filtered = q
     ? allPatients.filter((p) =>
@@ -15,27 +18,11 @@ export default async function PatientsList({ searchParams }) {
       )
     : allPatients;
 
-  const balances = await db
-    .select({
-      patientId: transactions.patientId,
-      totalUdhari: sql`COALESCE(SUM(${transactions.amount}), 0)`,
-    })
-    .from(transactions)
-    .groupBy(transactions.patientId);
-
-  const paid = await db
-    .select({
-      patientId: payments.patientId,
-      totalPaid: sql`COALESCE(SUM(${payments.amount}), 0)`,
-    })
-    .from(payments)
-    .groupBy(payments.patientId);
-
   return (
     <main className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-md mx-auto">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-xl font-bold text-blue-700">All Patients</h1>
+          <h1 className="text-xl font-bold text-blue-700">Patients</h1>
           <Link href="/patients/new">
             <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">
               + Add New
@@ -54,9 +41,11 @@ export default async function PatientsList({ searchParams }) {
 
         <div className="space-y-3">
           {filtered.map((patient) => {
-            const udhari = Number(balances.find((b) => b.patientId === patient.id)?.totalUdhari || 0);
-            const payment = Number(paid.find((p) => p.patientId === patient.id)?.totalPaid || 0);
-            const baki = udhari - payment;
+            const patientSales = allSales.filter((s) => s.patientId === patient.id && s.paymentType === "udhaar");
+            const patientPayments = allPayments.filter((p) => p.patientId === patient.id);
+            const totalUdhaar = patientSales.reduce((sum, s) => sum + s.netAmount, 0);
+            const totalPaid = patientPayments.reduce((sum, p) => sum + p.amount, 0);
+            const baki = totalUdhaar - totalPaid;
 
             return (
               <Link key={patient.id} href={`/patients/${patient.id}`}>

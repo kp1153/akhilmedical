@@ -1,6 +1,6 @@
- import { db } from "@/lib/db";
-import { patients, transactions, payments } from "@/lib/schema";
-import { eq, sql } from "drizzle-orm";
+import { db } from "@/lib/db";
+import { patients, payments, sales } from "@/lib/schema";
+import { eq } from "drizzle-orm";
 import Link from "next/link";
 
 export default async function Report({ searchParams }) {
@@ -11,49 +11,39 @@ export default async function Report({ searchParams }) {
   const selectedYear = year ? Number(year) : now.getFullYear();
 
   const allPatients = await db.select().from(patients);
+  const allSales = await db.select().from(sales);
+  const allPayments = await db.select().from(payments);
 
-  const results = await Promise.all(
-    allPatients.map(async (patient) => {
-      const txns = await db
-        .select()
-        .from(transactions)
-        .where(eq(transactions.patientId, patient.id));
+  const results = allPatients.map((patient) => {
+    const patientSales = allSales.filter((s) => s.patientId === patient.id);
+    const patientPayments = allPayments.filter((p) => p.patientId === patient.id);
 
-      const pmts = await db
-        .select()
-        .from(payments)
-        .where(eq(payments.patientId, patient.id));
+    const monthSales = patientSales.filter((s) => {
+      const d = new Date(s.createdAt);
+      return d.getMonth() + 1 === selectedMonth && d.getFullYear() === selectedYear;
+    });
 
-      const monthTxns = txns.filter((t) => {
-        const d = new Date(t.createdAt);
-        return d.getMonth() + 1 === selectedMonth && d.getFullYear() === selectedYear;
-      });
+    const monthPayments = patientPayments.filter((p) => {
+      const d = new Date(p.createdAt);
+      return d.getMonth() + 1 === selectedMonth && d.getFullYear() === selectedYear;
+    });
 
-      const monthPmts = pmts.filter((p) => {
-        const d = new Date(p.createdAt);
-        return d.getMonth() + 1 === selectedMonth && d.getFullYear() === selectedYear;
-      });
+    const udhaar = monthSales.filter((s) => s.paymentType === "udhaar").reduce((sum, s) => sum + s.netAmount, 0);
+    const paid = monthPayments.reduce((sum, p) => sum + p.amount, 0);
 
-      const udhari = monthTxns.reduce((sum, t) => sum + t.amount, 0);
-      const paid = monthPmts.reduce((sum, p) => sum + p.amount, 0);
+    const totalUdhaar = patientSales.filter((s) => s.paymentType === "udhaar").reduce((sum, s) => sum + s.netAmount, 0);
+    const totalPaid = patientPayments.reduce((sum, p) => sum + p.amount, 0);
+    const totalBaki = totalUdhaar - totalPaid;
 
-      const totalUdhari = txns.reduce((sum, t) => sum + t.amount, 0);
-      const totalPaid = pmts.reduce((sum, p) => sum + p.amount, 0);
-      const totalBaki = totalUdhari - totalPaid;
+    return { patient, udhaar, paid, totalBaki };
+  });
 
-      return { patient, udhari, paid, totalBaki };
-    })
-  );
-
-  const filtered = results.filter((r) => r.udhari > 0 || r.paid > 0);
-
-  const totalUdhariMonth = filtered.reduce((sum, r) => sum + r.udhari, 0);
+  const filtered = results.filter((r) => r.udhaar > 0 || r.paid > 0);
+  const totalUdhaarMonth = filtered.reduce((sum, r) => sum + r.udhaar, 0);
   const totalPaidMonth = filtered.reduce((sum, r) => sum + r.paid, 0);
 
-  const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
-  ];
+  const months = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
 
   return (
     <main className="min-h-screen bg-gray-50 p-4">
@@ -77,8 +67,8 @@ export default async function Report({ searchParams }) {
 
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-red-50 rounded-2xl shadow p-4 text-center">
-            <p className="text-sm text-gray-500">Total Udhari</p>
-            <p className="text-2xl font-bold text-red-600">Rs. {totalUdhariMonth.toFixed(2)}</p>
+            <p className="text-sm text-gray-500">Total Udhaar</p>
+            <p className="text-2xl font-bold text-red-600">Rs. {totalUdhaarMonth.toFixed(2)}</p>
           </div>
           <div className="bg-green-50 rounded-2xl shadow p-4 text-center">
             <p className="text-sm text-gray-500">Total Received</p>
@@ -90,7 +80,7 @@ export default async function Report({ searchParams }) {
           {filtered.length === 0 && (
             <p className="text-center text-gray-400">No transactions this month</p>
           )}
-          {filtered.map(({ patient, udhari, paid, totalBaki }) => (
+          {filtered.map(({ patient, udhaar, paid, totalBaki }) => (
             <Link key={patient.id} href={`/patients/${patient.id}`}>
               <div className="border-b pb-3">
                 <div className="flex justify-between">
@@ -100,7 +90,7 @@ export default async function Report({ searchParams }) {
                   </p>
                 </div>
                 <div className="flex justify-between text-xs text-gray-400 mt-1">
-                  <span>Udhari: Rs. {udhari.toFixed(2)}</span>
+                  <span>Udhaar: Rs. {udhaar.toFixed(2)}</span>
                   <span>Paid: Rs. {paid.toFixed(2)}</span>
                 </div>
               </div>
