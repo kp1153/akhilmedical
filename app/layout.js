@@ -70,19 +70,19 @@ export default function RootLayout({ children }) {
             </Link>
             <Link href="/sales/new" className="flex flex-col items-center text-xs text-blue-600 font-semibold">
               <span className="text-xl">🧾</span>
-              <span>New Bill</span>
-            </Link>
-            <Link href="/patients" className="flex flex-col items-center text-xs text-gray-500">
-              <span className="text-xl">👤</span>
-              <span>Patients</span>
+              <span>Bill</span>
             </Link>
             <Link href="/medicines" className="flex flex-col items-center text-xs text-gray-500">
               <span className="text-xl">💊</span>
               <span>Medicines</span>
             </Link>
-            <Link href="/suppliers" className="flex flex-col items-center text-xs text-gray-500">
-              <span className="text-xl">🏭</span>
-              <span>Suppliers</span>
+            <Link href="/sales" className="flex flex-col items-center text-xs text-gray-500">
+              <span className="text-xl">📋</span>
+              <span>Bills</span>
+            </Link>
+            <Link href="/report" className="flex flex-col items-center text-xs text-gray-500">
+              <span className="text-xl">☰</span>
+              <span>More</span>
             </Link>
           </nav>
 

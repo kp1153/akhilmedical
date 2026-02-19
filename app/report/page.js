@@ -1,6 +1,5 @@
 import { db } from "@/lib/db";
 import { patients, payments, sales } from "@/lib/schema";
-import { eq } from "drizzle-orm";
 import Link from "next/link";
 
 export default async function Report({ searchParams }) {
@@ -48,7 +47,29 @@ export default async function Report({ searchParams }) {
   return (
     <main className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-md mx-auto space-y-4">
-        <Link href="/" className="text-blue-600 text-sm">Back</Link>
+
+        {/* More Menu - Mobile Only */}
+        <div className="md:hidden grid grid-cols-3 gap-3">
+          <Link href="/patients">
+            <div className="bg-white rounded-2xl shadow p-4 text-center">
+              <span className="text-2xl">👤</span>
+              <p className="text-xs text-gray-600 mt-1">Patients</p>
+            </div>
+          </Link>
+          <Link href="/suppliers">
+            <div className="bg-white rounded-2xl shadow p-4 text-center">
+              <span className="text-2xl">🏭</span>
+              <p className="text-xs text-gray-600 mt-1">Suppliers</p>
+            </div>
+          </Link>
+          <Link href="/purchases/new">
+            <div className="bg-white rounded-2xl shadow p-4 text-center">
+              <span className="text-2xl">📦</span>
+              <p className="text-xs text-gray-600 mt-1">Purchase</p>
+            </div>
+          </Link>
+        </div>
+
         <h1 className="text-xl font-bold text-blue-700">Monthly Report</h1>
 
         <form method="GET" className="bg-white rounded-2xl shadow p-4 flex gap-3">
