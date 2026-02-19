@@ -1,5 +1,5 @@
- "use client";
-import { useState, useEffect } from "react";
+"use client";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 export default function NewSale() {
@@ -12,10 +12,25 @@ export default function NewSale() {
   const [items, setItems] = useState([
     { medicineId: "", medicineName: "", hsnCode: "", batch: "", expiry: "", quantity: 1, freeQty: 0, rate: 0, mrp: 0, discount: 0, sgst: 0, cgst: 0, sgstAmount: 0, cgstAmount: 0, amount: 0 },
   ]);
+  const [searches, setSearches] = useState([""]);
+  const [dropdowns, setDropdowns] = useState([false]);
+  const dropdownRefs = useRef([]);
 
   useEffect(() => {
     fetch("/api/medicines").then((r) => r.json()).then(setMedicines);
     fetch("/api/patients").then((r) => r.json()).then(setPatients);
+  }, []);
+
+  useEffect(() => {
+    function handleClick(e) {
+      dropdownRefs.current.forEach((ref, i) => {
+        if (ref && !ref.contains(e.target)) {
+          setDropdowns(prev => { const d = [...prev]; d[i] = false; return d; });
+        }
+      });
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
   function calculateAmount(item) {
@@ -33,22 +48,23 @@ export default function NewSale() {
     return { ...item, sgstAmount, cgstAmount, amount };
   }
 
-  function handleMedicineSelect(index, medicineId) {
-    const med = medicines.find((m) => m.id === Number(medicineId));
+  function handleMedicineSelect(index, med) {
     const updated = [...items];
     updated[index] = calculateAmount({
       ...updated[index],
-      medicineId: med ? med.id : "",
-      medicineName: med ? med.name : "",
-      hsnCode: med ? med.hsnCode : "",
-      batch: med ? med.batch : "",
-      expiry: med ? med.expiry : "",
-      rate: med ? med.salePrice : 0,
-      mrp: med ? med.mrp : 0,
-      sgst: med ? med.sgst : 0,
-      cgst: med ? med.cgst : 0,
+      medicineId: med.id,
+      medicineName: med.name,
+      hsnCode: med.hsnCode || "",
+      batch: med.batch || "",
+      expiry: med.expiry || "",
+      rate: med.salePrice || 0,
+      mrp: med.mrp || 0,
+      sgst: med.sgst || 0,
+      cgst: med.cgst || 0,
     });
     setItems(updated);
+    const s = [...searches]; s[index] = med.name; setSearches(s);
+    const d = [...dropdowns]; d[index] = false; setDropdowns(d);
   }
 
   function handleItemChange(index, field, value) {
@@ -59,10 +75,14 @@ export default function NewSale() {
 
   function addItem() {
     setItems([...items, { medicineId: "", medicineName: "", hsnCode: "", batch: "", expiry: "", quantity: 1, freeQty: 0, rate: 0, mrp: 0, discount: 0, sgst: 0, cgst: 0, sgstAmount: 0, cgstAmount: 0, amount: 0 }]);
+    setSearches([...searches, ""]);
+    setDropdowns([...dropdowns, false]);
   }
 
   function removeItem(index) {
     setItems(items.filter((_, i) => i !== index));
+    setSearches(searches.filter((_, i) => i !== index));
+    setDropdowns(dropdowns.filter((_, i) => i !== index));
   }
 
   const totalAmount = items.reduce((sum, i) => sum + Number(i.amount), 0);
@@ -127,64 +147,94 @@ export default function NewSale() {
 
         <div className="bg-white rounded-2xl shadow p-4 space-y-3">
           <h2 className="font-semibold text-gray-700">Items</h2>
-          {items.map((item, index) => (
-            <div key={index} className="border rounded-lg p-3 space-y-2">
-              <select onChange={(e) => handleMedicineSelect(index, e.target.value)} className="w-full border rounded-lg p-2">
-                <option value="">-- Select Medicine --</option>
-                {medicines.map((m) => (
-                  <option key={m.id} value={m.id}>{m.name} | Stock: {m.stock} | Rs. {m.salePrice}</option>
-                ))}
-              </select>
-              <div className="grid grid-cols-4 gap-2">
-                <div>
-                  <label className="text-xs text-gray-500">Qty</label>
-                  <input type="number" min={1} value={item.quantity}
-                    onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
-                    className="w-full border rounded-lg p-2" />
+          {items.map((item, index) => {
+            const filtered = medicines.filter(m =>
+              m.name.toLowerCase().includes((searches[index] || "").toLowerCase())
+            ).slice(0, 10);
+
+            return (
+              <div key={index} className="border rounded-lg p-3 space-y-2">
+                <div className="relative" ref={el => dropdownRefs.current[index] = el}>
+                  <input
+                    type="text"
+                    placeholder="Search medicine..."
+                    value={searches[index] || ""}
+                    onChange={e => {
+                      const s = [...searches]; s[index] = e.target.value; setSearches(s);
+                      const d = [...dropdowns]; d[index] = true; setDropdowns(d);
+                    }}
+                    onFocus={() => { const d = [...dropdowns]; d[index] = true; setDropdowns(d); }}
+                    className="w-full border rounded-lg p-2"
+                  />
+                  {dropdowns[index] && filtered.length > 0 && (
+                    <div className="absolute z-50 w-full bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                      {filtered.map(m => (
+                        <div
+                          key={m.id}
+                          onClick={() => handleMedicineSelect(index, m)}
+                          className="px-3 py-2 hover:bg-blue-50 cursor-pointer text-sm"
+                        >
+                          <span className="font-semibold">{m.name}</span>
+                          <span className="text-gray-400 ml-2">Stock: {m.stock} | Rs. {m.salePrice}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <label className="text-xs text-gray-500">Free</label>
-                  <input type="number" min={0} value={item.freeQty}
-                    onChange={(e) => handleItemChange(index, "freeQty", e.target.value)}
-                    className="w-full border rounded-lg p-2" />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500">Rate</label>
-                  <input type="number" value={item.rate}
-                    onChange={(e) => handleItemChange(index, "rate", e.target.value)}
-                    className="w-full border rounded-lg p-2" />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500">Disc %</label>
-                  <input type="number" min={0} max={100} value={item.discount}
-                    onChange={(e) => handleItemChange(index, "discount", e.target.value)}
-                    className="w-full border rounded-lg p-2" />
-                </div>
-              </div>
-              {billType === "wholesale" && (
-                <div className="grid grid-cols-2 gap-2">
+
+                <div className="grid grid-cols-4 gap-2">
                   <div>
-                    <label className="text-xs text-gray-500">SGST %</label>
-                    <input type="number" value={item.sgst}
-                      onChange={(e) => handleItemChange(index, "sgst", e.target.value)}
+                    <label className="text-xs text-gray-500">Qty</label>
+                    <input type="number" min={1} value={item.quantity}
+                      onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
                       className="w-full border rounded-lg p-2" />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500">CGST %</label>
-                    <input type="number" value={item.cgst}
-                      onChange={(e) => handleItemChange(index, "cgst", e.target.value)}
+                    <label className="text-xs text-gray-500">Free</label>
+                    <input type="number" min={0} value={item.freeQty}
+                      onChange={(e) => handleItemChange(index, "freeQty", e.target.value)}
+                      className="w-full border rounded-lg p-2" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Rate</label>
+                    <input type="number" value={item.rate}
+                      onChange={(e) => handleItemChange(index, "rate", e.target.value)}
+                      className="w-full border rounded-lg p-2" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Disc %</label>
+                    <input type="number" min={0} max={100} value={item.discount}
+                      onChange={(e) => handleItemChange(index, "discount", e.target.value)}
                       className="w-full border rounded-lg p-2" />
                   </div>
                 </div>
-              )}
-              <div className="flex justify-between items-center">
-                <p className="text-sm font-semibold text-green-600">Rs. {Number(item.amount).toFixed(2)}</p>
-                {items.length > 1 && (
-                  <button type="button" onClick={() => removeItem(index)} className="text-red-400 text-sm">Remove</button>
+
+                {billType === "wholesale" && (
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs text-gray-500">SGST %</label>
+                      <input type="number" value={item.sgst}
+                        onChange={(e) => handleItemChange(index, "sgst", e.target.value)}
+                        className="w-full border rounded-lg p-2" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500">CGST %</label>
+                      <input type="number" value={item.cgst}
+                        onChange={(e) => handleItemChange(index, "cgst", e.target.value)}
+                        className="w-full border rounded-lg p-2" />
+                    </div>
+                  </div>
                 )}
+
+                <div className="flex justify-between items-center">
+                  <p className="text-sm font-semibold text-green-600">Rs. {Number(item.amount).toFixed(2)}</p>
+                  {items.length > 1 && (
+                    <button type="button" onClick={() => removeItem(index)} className="text-red-400 text-sm">Remove</button>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           <button type="button" onClick={addItem} className="w-full border-2 border-dashed border-blue-300 text-blue-500 rounded-lg p-2">
             + Add Item
           </button>
@@ -194,12 +244,10 @@ export default function NewSale() {
           {billType === "wholesale" && (
             <>
               <div className="flex justify-between text-sm text-gray-500">
-                <p>SGST</p>
-                <p>Rs. {sgstTotal.toFixed(2)}</p>
+                <p>SGST</p><p>Rs. {sgstTotal.toFixed(2)}</p>
               </div>
               <div className="flex justify-between text-sm text-gray-500">
-                <p>CGST</p>
-                <p>Rs. {cgstTotal.toFixed(2)}</p>
+                <p>CGST</p><p>Rs. {cgstTotal.toFixed(2)}</p>
               </div>
             </>
           )}
