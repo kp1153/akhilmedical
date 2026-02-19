@@ -12,7 +12,7 @@ export default async function Home() {
     .reduce((sum, s) => sum + s.netAmount, 0);
 
   const totalPaid = allPayments.reduce((sum, p) => sum + p.amount, 0);
-  const totalPending = totalUdhar - totalPaid;
+  const totalPending = Math.max(0, totalUdhar - totalPaid);
 
   const lowStockCount = allMedicines.filter((m) => m.stock <= 10).length;
   const expiredCount = allMedicines.filter((m) => {
