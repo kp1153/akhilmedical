@@ -16,6 +16,12 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Akhil Medical",
   description: "Medical Store Management Software",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Akhil Medical",
+  },
 };
 
 export default function RootLayout({ children }) {
