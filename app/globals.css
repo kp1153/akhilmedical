@@ -29,4 +29,14 @@ body {
   .no-print {
     display: none !important;
   }
+  aside, nav {
+    display: none !important;
+  }
+  main {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+  #print-area {
+    box-shadow: none !important;
+  }
 }
