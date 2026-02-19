@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { patients, payments } from "@/lib/schema";
+import { patients, payments, sales } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import Link from "next/link";
 import DeleteButton from "./DeleteButton";
@@ -10,9 +10,27 @@ export default async function PatientDetail({ params }) {
 
   const patient = await db.select().from(patients).where(eq(patients.id, patientId));
   const pmts = await db.select().from(payments).where(eq(payments.patientId, patientId));
+  const udhar = await db.select().from(sales).where(eq(sales.patientId, patientId));
 
+  const totalUdhar = udhar.filter(s => s.paymentType === 'udhaar').reduce((sum, s) => sum + s.netAmount, 0);
   const totalPaid = pmts.reduce((sum, p) => sum + p.amount, 0);
-  const baki = -totalPaid;
+  const baki = totalUdhar - totalPaid;
+
+  const timeline = [
+    ...udhar.filter(s => s.paymentType === 'udhaar').map(s => ({
+      type: 'udhaar',
+      amount: s.netAmount,
+      label: `Bill #${s.billNumber}`,
+      date: s.createdAt,
+    })),
+    ...pmts.map(p => ({
+      type: 'payment',
+      amount: p.amount,
+      label: p.method,
+      date: p.createdAt,
+      id: p.id,
+    })),
+  ].sort((a, b) => new Date(a.date) - new Date(b.date))
 
   const whatsappMessage = `Hello ${patient[0]?.name}, your pending amount at Akhil Medical is Rs. ${Math.abs(baki).toFixed(2)}. Please clear your dues. Thank you.`;
   const whatsappLink = `https://wa.me/91${patient[0]?.mobile}?text=${encodeURIComponent(whatsappMessage)}`;
@@ -50,22 +68,29 @@ export default async function PatientDetail({ params }) {
         )}
 
         <div className="bg-white rounded-2xl shadow p-5">
-          <h2 className="font-bold text-gray-700 mb-3">Payment History</h2>
+          <h2 className="font-bold text-gray-700 mb-3">Timeline</h2>
           <div className="space-y-2">
-            {pmts.map((p) => (
-              <div key={p.id} className="flex justify-between items-start text-sm border-b pb-2">
+            {timeline.map((item, i) => (
+              <div key={i} className="flex justify-between items-start text-sm border-b pb-2">
                 <div>
-                  <p className="text-gray-600">{p.method}</p>
-                  <p className="text-xs text-gray-400">{new Date(p.createdAt).toLocaleString("en-IN")}</p>
+                  <p className={`font-semibold ${item.type === 'udhaar' ? 'text-red-500' : 'text-green-500'}`}>
+                    {item.type === 'udhaar' ? '🔴 Udhaar' : '🟢 Payment'}
+                  </p>
+                  <p className="text-gray-600">{item.label}</p>
+                  <p className="text-xs text-gray-400">{new Date(item.date).toLocaleString("en-IN")}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-green-500 font-semibold">+ Rs. {p.amount}</span>
-                  <DeleteButton id={p.id} type="payments" patientId={id} />
+                  <span className={`font-semibold ${item.type === 'udhaar' ? 'text-red-500' : 'text-green-500'}`}>
+                    {item.type === 'udhaar' ? '-' : '+'} Rs. {item.amount}
+                  </span>
+                  {item.type === 'payment' && (
+                    <DeleteButton id={item.id} type="payments" patientId={id} />
+                  )}
                 </div>
               </div>
             ))}
-            {pmts.length === 0 && (
-              <p className="text-gray-400 text-center">No payments yet</p>
+            {timeline.length === 0 && (
+              <p className="text-gray-400 text-center">No records yet</p>
             )}
           </div>
         </div>
