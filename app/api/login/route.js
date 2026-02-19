@@ -7,7 +7,7 @@ export async function POST(request) {
     const response = NextResponse.json({ success: true })
     response.cookies.set('auth', process.env.SHOP_PASSWORD, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",,
+      secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 30,
       path: '/',
     })
