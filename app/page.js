@@ -1,14 +1,18 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { sales, medicines } from "@/lib/schema";
+import { sales, medicines, payments } from "@/lib/schema";
 
 export default async function Home() {
   const allSales = await db.select().from(sales);
   const allMedicines = await db.select().from(medicines);
+  const allPayments = await db.select().from(payments);
 
-  const totalPending = allSales
+  const totalUdhar = allSales
     .filter((s) => s.paymentType === "udhaar")
     .reduce((sum, s) => sum + s.netAmount, 0);
+
+  const totalPaid = allPayments.reduce((sum, p) => sum + p.amount, 0);
+  const totalPending = totalUdhar - totalPaid;
 
   const lowStockCount = allMedicines.filter((m) => m.stock <= 10).length;
   const expiredCount = allMedicines.filter((m) => {
