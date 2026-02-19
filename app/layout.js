@@ -68,6 +68,9 @@ export default function RootLayout({ children }) {
               <Link href="/report" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-600 transition">
                 <span>📊</span><span>Report</span>
               </Link>
+              <Link href="/profit" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-600 transition">
+              <span>💰</span><span>Profit/Loss</span>
+              </Link>
             </nav>
             <div className="p-3 border-t border-blue-600">
            <LogoutButton />
