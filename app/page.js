@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { payments, transactions } from "@/lib/schema";
+import { payments, transactions, medicines } from "@/lib/schema";
 import { sql } from "drizzle-orm";
 
 export default async function Home() {
@@ -12,7 +12,13 @@ export default async function Home() {
     .select({ total: sql`COALESCE(SUM(amount), 0)` })
     .from(payments);
 
+  const lowStock = await db
+    .select()
+    .from(medicines)
+    .all();
+
   const baki = Number(totalUdhari[0].total) - Number(totalPayments[0].total);
+  const lowStockCount = lowStock.filter((m) => m.stock <= 10).length;
 
   return (
     <main className="min-h-screen bg-gray-50 p-4">
@@ -21,11 +27,15 @@ export default async function Home() {
       </h1>
 
       <div className="grid grid-cols-1 gap-4 max-w-md mx-auto">
-        <div className="bg-white rounded-2xl shadow p-5 text-center">
-          <p className="text-gray-500 text-sm">Total Pending</p>
-          <p className="text-3xl font-bold text-red-600 mt-1">
-            Rs. {baki.toFixed(2)}
-          </p>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-white rounded-2xl shadow p-5 text-center">
+            <p className="text-gray-500 text-sm">Total Pending</p>
+            <p className="text-2xl font-bold text-red-600 mt-1">Rs. {baki.toFixed(2)}</p>
+          </div>
+          <div className="bg-white rounded-2xl shadow p-5 text-center">
+            <p className="text-gray-500 text-sm">Low Stock</p>
+            <p className="text-2xl font-bold text-orange-500 mt-1">{lowStockCount} items</p>
+          </div>
         </div>
 
         <Link href="/patients/new">
@@ -37,6 +47,12 @@ export default async function Home() {
         <Link href="/patients">
           <div className="bg-white rounded-2xl shadow p-4 text-center font-semibold text-gray-700">
             View All Patients
+          </div>
+        </Link>
+
+        <Link href="/medicines">
+          <div className="bg-white rounded-2xl shadow p-4 text-center font-semibold text-gray-700">
+            Medicines & Stock
           </div>
         </Link>
 
