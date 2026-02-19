@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { patients, transactions, payments } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import Link from "next/link";
+import DeleteButton from "./DeleteButton";
 
 export default async function PatientDetail({ params }) {
   const { id } = await params;
@@ -61,21 +62,27 @@ export default async function PatientDetail({ params }) {
           <h2 className="font-bold text-gray-700 mb-3">Transaction History</h2>
           <div className="space-y-2">
             {txns.map((t) => (
-              <div key={t.id} className="flex justify-between text-sm border-b pb-2">
+              <div key={t.id} className="flex justify-between items-start text-sm border-b pb-2">
                 <div>
                   <p className="text-gray-600">{t.description || "Udhari"}</p>
                   <p className="text-xs text-gray-400">{new Date(t.createdAt).toLocaleString("en-IN")}</p>
                 </div>
-                <span className="text-red-500 font-semibold">- Rs. {t.amount}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-red-500 font-semibold">- Rs. {t.amount}</span>
+                  <DeleteButton id={t.id} type="transactions" patientId={id} />
+                </div>
               </div>
             ))}
             {pmts.map((p) => (
-              <div key={p.id} className="flex justify-between text-sm border-b pb-2">
+              <div key={p.id} className="flex justify-between items-start text-sm border-b pb-2">
                 <div>
                   <p className="text-gray-600">{p.method}</p>
                   <p className="text-xs text-gray-400">{new Date(p.createdAt).toLocaleString("en-IN")}</p>
                 </div>
-                <span className="text-green-500 font-semibold">+ Rs. {p.amount}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-green-500 font-semibold">+ Rs. {p.amount}</span>
+                  <DeleteButton id={p.id} type="payments" patientId={id} />
+                </div>
               </div>
             ))}
             {txns.length === 0 && pmts.length === 0 && (
