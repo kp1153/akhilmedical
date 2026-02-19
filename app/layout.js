@@ -16,17 +16,22 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Akhil Medical",
   description: "Medical Store Management Software",
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "Akhil Medical",
-  },
+};
+
+export const viewport = {
+  themeColor: "#1d4ed8",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="Akhil Medical" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
+      </head>
       <body className={`${geist.variable} ${geistMono.variable} antialiased`}>
         <div className="flex min-h-screen">
 
@@ -40,7 +45,7 @@ export default function RootLayout({ children }) {
               <Link href="/" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-600 transition">
                 <span>🏠</span><span>Dashboard</span>
               </Link>
-              <Link href="/sales/new" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-600 transition bg-blue-500">
+              <Link href="/sales/new" className="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 transition">
                 <span>🧾</span><span>New Bill</span>
               </Link>
               <Link href="/sales" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-600 transition">
