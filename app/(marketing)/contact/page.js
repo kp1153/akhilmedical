@@ -47,7 +47,7 @@ export default function ContactPage() {
       </div>
 
       <div className="mt-6">
-        <a href="https://maps.google.com/?q=Hathiyawa+Chauraha+Siddharth+Nagar+Uttar+Pradesh"
+        <a href="https://maps.google.com/?q=Hathiyawa+Chauraha+Siddharth+Nagar+272189+Uttar+Pradesh"
           target="_blank" rel="noreferrer"
           className="block bg-blue-600 text-white text-center rounded-2xl p-4 font-semibold">
           📍 View on Google Maps
