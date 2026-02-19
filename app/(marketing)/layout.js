@@ -12,7 +12,7 @@ export default function MarketingLayout({ children }) {
       </header>
       <main>{children}</main>
       <footer className="bg-blue-700 text-white text-center p-4 text-sm mt-10">
-        <p>© 2025 Akhil Medical Store | akhilmedical.store</p>
+        <p>© 2026 Akhil Medical Store | akhilmedical.store</p>
         <p className="mt-1 text-blue-200">
           Developed by{" "}
           <a href="https://www.web-developer-kp.com" target="_blank" rel="noreferrer"
