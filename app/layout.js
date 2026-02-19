@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import MobileNav from "./MobileNav";
+import LogoutButton from './LogoutButton'
 
 const geist = Geist({
   variable: "--font-geist-sans",
@@ -68,6 +69,9 @@ export default function RootLayout({ children }) {
                 <span>📊</span><span>Report</span>
               </Link>
             </nav>
+            <div className="p-3 border-t border-blue-600">
+           <LogoutButton />
+           </div>
           </aside>
 
           {/* Main Content */}
