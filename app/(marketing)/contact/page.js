@@ -8,7 +8,7 @@ export default function ContactPage() {
           <span className="text-3xl">📍</span>
           <div>
             <h2 className="font-bold text-gray-800">Address</h2>
-            <p className="text-gray-600">Hathiyawa Chauraha, Siddharth Nagar - 272189, Uttar Pradesh</p>
+            <p className="text-gray-600">Hathiyawa Chauraha, Siddharth Nagar - 272189, Uttar Pradesh, India</p>
           </div>
         </div>
 
@@ -46,7 +46,18 @@ export default function ContactPage() {
         </div>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 rounded-2xl overflow-hidden shadow">
+        <iframe
+          src="https://maps.google.com/maps?q=Hathiyawa+Chauraha+Siddharth+Nagar+272189+Uttar+Pradesh&output=embed"
+          width="100%"
+          height="300"
+          style={{ border: 0 }}
+          allowFullScreen=""
+          loading="lazy"
+        ></iframe>
+      </div>
+
+      <div className="mt-4">
         <a href="https://maps.google.com/?q=Hathiyawa+Chauraha+Siddharth+Nagar+272189+Uttar+Pradesh"
           target="_blank" rel="noreferrer"
           className="block bg-blue-600 text-white text-center rounded-2xl p-4 font-semibold">
