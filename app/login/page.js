@@ -1,12 +1,10 @@
 'use client'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [show, setShow] = useState(false)
-  const router = useRouter()
 
   async function handleLogin(e) {
     e.preventDefault()
@@ -16,7 +14,7 @@ export default function LoginPage() {
       headers: { 'Content-Type': 'application/json' },
     })
     if (res.ok) {
-      router.push('/')
+      window.location.href = '/'
     } else {
       setError('Wrong password')
     }
