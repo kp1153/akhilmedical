@@ -15,6 +15,9 @@ export default async function PatientDetail({ params }) {
   const totalPaid = pmts.reduce((sum, p) => sum + p.amount, 0);
   const baki = totalUdhari - totalPaid;
 
+  const whatsappMessage = `Hello ${patient[0]?.name}, your pending amount at Akhil Medical is Rs. ${baki.toFixed(2)}. Please clear your dues. Thank you.`;
+  const whatsappLink = `https://wa.me/91${patient[0]?.mobile}?text=${encodeURIComponent(whatsappMessage)}`;
+
   return (
     <main className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-md mx-auto space-y-4">
@@ -45,6 +48,14 @@ export default async function PatientDetail({ params }) {
             </div>
           </Link>
         </div>
+
+        {patient[0]?.mobile && baki > 0 && (
+          <a href={whatsappLink} target="_blank" rel="noreferrer">
+            <div className="bg-[#25D366] text-white rounded-2xl p-4 text-center font-semibold">
+              Send WhatsApp Reminder
+            </div>
+          </a>
+        )}
 
         <div className="bg-white rounded-2xl shadow p-5">
           <h2 className="font-bold text-gray-700 mb-3">Transaction History</h2>

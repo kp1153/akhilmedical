@@ -1,10 +1,19 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { patients, transactions, payments } from "@/lib/schema";
-import { sql, eq } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 
-export default async function PatientsList() {
+export default async function PatientsList({ searchParams }) {
+  const { q } = await searchParams;
+
   const allPatients = await db.select().from(patients).orderBy(patients.name);
+
+  const filtered = q
+    ? allPatients.filter((p) =>
+        p.name.toLowerCase().includes(q.toLowerCase()) ||
+        (p.mobile && p.mobile.includes(q))
+      )
+    : allPatients;
 
   const balances = await db
     .select({
@@ -25,7 +34,7 @@ export default async function PatientsList() {
   return (
     <main className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-md mx-auto">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-4">
           <h1 className="text-xl font-bold text-blue-700">All Patients</h1>
           <Link href="/patients/new">
             <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">
@@ -34,8 +43,17 @@ export default async function PatientsList() {
           </Link>
         </div>
 
+        <form method="GET" className="mb-4">
+          <input
+            name="q"
+            defaultValue={q || ""}
+            placeholder="Search by name or mobile..."
+            className="w-full border rounded-lg p-3 bg-white shadow-sm"
+          />
+        </form>
+
         <div className="space-y-3">
-          {allPatients.map((patient) => {
+          {filtered.map((patient) => {
             const udhari = Number(balances.find((b) => b.patientId === patient.id)?.totalUdhari || 0);
             const payment = Number(paid.find((p) => p.patientId === patient.id)?.totalPaid || 0);
             const baki = udhari - payment;
@@ -58,8 +76,8 @@ export default async function PatientsList() {
             );
           })}
 
-          {allPatients.length === 0 && (
-            <p className="text-center text-gray-400 mt-10">No patients yet</p>
+          {filtered.length === 0 && (
+            <p className="text-center text-gray-400 mt-10">No patients found</p>
           )}
         </div>
       </div>
