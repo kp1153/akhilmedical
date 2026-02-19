@@ -18,26 +18,10 @@ export default function MobileNav() {
 
   return (
     <>
-      {/* Bottom Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-blue-700 text-white z-20 flex justify-around items-center h-16 no-print">
-        <Link href="/" className="flex flex-col items-center text-xs">
-          <span className="text-xl">🏠</span>
-          <span>Home</span>
-        </Link>
-        <Link href="/sales/new" className="flex flex-col items-center text-xs">
-          <span className="text-xl">🧾</span>
-          <span>New Bill</span>
-        </Link>
-        <Link href="/medicines" className="flex flex-col items-center text-xs">
-          <span className="text-xl">💊</span>
-          <span>Medicines</span>
-        </Link>
-        <Link href="/sales" className="flex flex-col items-center text-xs">
-          <span className="text-xl">📋</span>
-          <span>Bills</span>
-        </Link>
-        <button onClick={() => setOpen(true)} className="flex flex-col items-center text-xs">
-          <span className="text-xl">☰</span>
+      {/* Bottom Bar - सिर्फ Menu button */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-blue-700 text-white z-20 flex justify-center items-center h-16 no-print">
+        <button onClick={() => setOpen(true)} className="flex flex-col items-center text-sm font-semibold">
+          <span className="text-2xl">☰</span>
           <span>Menu</span>
         </button>
       </nav>
