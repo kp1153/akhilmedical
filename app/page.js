@@ -12,8 +12,7 @@ export default async function Home() {
     .select({ total: sql`COALESCE(SUM(amount), 0)` })
     .from(payments);
 
-  const baki =
-    Number(totalUdhari[0].total) - Number(totalPayments[0].total);
+  const baki = Number(totalUdhari[0].total) - Number(totalPayments[0].total);
 
   return (
     <main className="min-h-screen bg-gray-50 p-4">
@@ -38,6 +37,12 @@ export default async function Home() {
         <Link href="/patients">
           <div className="bg-white rounded-2xl shadow p-4 text-center font-semibold text-gray-700">
             View All Patients
+          </div>
+        </Link>
+
+        <Link href="/report">
+          <div className="bg-white rounded-2xl shadow p-4 text-center font-semibold text-gray-700">
+            Monthly Report
           </div>
         </Link>
       </div>
