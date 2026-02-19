@@ -21,6 +21,9 @@ export default function NewMedicine() {
         purchasePrice: Number(formData.get("purchasePrice")),
         salePrice: Number(formData.get("salePrice")),
         stock: Number(formData.get("stock")),
+        hsnCode: formData.get("hsnCode"),
+        sgst: Number(formData.get("sgst")),
+        cgst: Number(formData.get("cgst")),
       }),
       headers: { "Content-Type": "application/json" },
     });
@@ -40,13 +43,15 @@ export default function NewMedicine() {
           <label className="text-sm text-gray-600">Company</label>
           <input name="company" className="w-full border rounded-lg p-2 mt-1" />
         </div>
-        <div>
-          <label className="text-sm text-gray-600">Batch No.</label>
-          <input name="batch" className="w-full border rounded-lg p-2 mt-1" />
-        </div>
-        <div>
-          <label className="text-sm text-gray-600">Expiry (MM/YYYY)</label>
-          <input name="expiry" placeholder="06/2026" className="w-full border rounded-lg p-2 mt-1" />
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="text-sm text-gray-600">Batch No.</label>
+            <input name="batch" className="w-full border rounded-lg p-2 mt-1" />
+          </div>
+          <div>
+            <label className="text-sm text-gray-600">Expiry (MM/YYYY)</label>
+            <input name="expiry" placeholder="06/2026" className="w-full border rounded-lg p-2 mt-1" />
+          </div>
         </div>
         <div className="grid grid-cols-3 gap-2">
           <div>
@@ -60,6 +65,20 @@ export default function NewMedicine() {
           <div>
             <label className="text-sm text-gray-600">Sale Price</label>
             <input name="salePrice" type="number" step="0.01" className="w-full border rounded-lg p-2 mt-1" />
+          </div>
+        </div>
+        <div>
+          <label className="text-sm text-gray-600">HSN Code</label>
+          <input name="hsnCode" placeholder="3004" className="w-full border rounded-lg p-2 mt-1" />
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="text-sm text-gray-600">SGST %</label>
+            <input name="sgst" type="number" step="0.01" defaultValue={2.5} className="w-full border rounded-lg p-2 mt-1" />
+          </div>
+          <div>
+            <label className="text-sm text-gray-600">CGST %</label>
+            <input name="cgst" type="number" step="0.01" defaultValue={2.5} className="w-full border rounded-lg p-2 mt-1" />
           </div>
         </div>
         <div>

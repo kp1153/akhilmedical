@@ -10,15 +10,17 @@ export async function GET() {
 
 export async function POST(request) {
   const body = await request.json();
-
   const billNumber = "BILL-" + Date.now();
 
   const inserted = await db.insert(sales).values({
     billNumber,
+    billType: body.billType,
     patientId: body.patientId || null,
     paymentType: body.paymentType,
     totalAmount: body.totalAmount,
     discountAmount: 0,
+    sgstTotal: body.sgstTotal,
+    cgstTotal: body.cgstTotal,
     netAmount: body.netAmount,
   }).returning();
 
@@ -30,9 +32,18 @@ export async function POST(request) {
       saleId,
       medicineId: item.medicineId || null,
       medicineName: item.medicineName,
+      hsnCode: item.hsnCode || null,
+      batch: item.batch || null,
+      expiry: item.expiry || null,
       quantity: item.quantity,
+      freeQty: item.freeQty || 0,
       rate: item.rate,
+      mrp: item.mrp || 0,
       discount: item.discount,
+      sgst: item.sgst,
+      cgst: item.cgst,
+      sgstAmount: item.sgstAmount,
+      cgstAmount: item.cgstAmount,
       amount: item.amount,
     });
 

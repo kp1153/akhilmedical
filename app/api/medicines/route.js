@@ -18,6 +18,9 @@ export async function POST(request) {
     purchasePrice: body.purchasePrice,
     salePrice: body.salePrice,
     stock: body.stock,
+    hsnCode: body.hsnCode,
+    sgst: body.sgst,
+    cgst: body.cgst,
   });
   return NextResponse.json({ success: true });
 }
