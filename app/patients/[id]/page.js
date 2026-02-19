@@ -38,9 +38,9 @@ export default async function PatientDetail({ params }) {
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <Link href={`/patients/${id}/add-udhari`}>
+          <Link href={`/patients/${id}/add-transaction`}>
             <div className="bg-red-500 text-white rounded-2xl p-4 text-center font-semibold">
-              + Add Udhari
+              + Add Transaction
             </div>
           </Link>
           <Link href={`/patients/${id}/add-payment`}>

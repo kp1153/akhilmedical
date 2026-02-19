@@ -2,6 +2,11 @@ import { db } from "@/lib/db";
 import { patients } from "@/lib/schema";
 import { NextResponse } from "next/server";
 
+export async function GET() {
+  const all = await db.select().from(patients).orderBy(patients.name);
+  return NextResponse.json(all);
+}
+
 export async function POST(request) {
   const body = await request.json();
   await db.insert(patients).values({
