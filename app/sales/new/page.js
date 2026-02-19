@@ -112,32 +112,32 @@ export default function NewSale() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-4">
-      <h1 className="text-xl font-bold text-blue-700 mb-6">New Bill</h1>
-      <form onSubmit={handleSubmit} className="max-w-lg mx-auto space-y-4">
+    <main className="min-h-screen bg-gray-50 p-3">
+      <h1 className="text-xl font-bold text-blue-700 mb-4">New Bill</h1>
+      <form onSubmit={handleSubmit} className="max-w-lg mx-auto space-y-3">
 
         <div className="bg-white rounded-2xl shadow p-4 space-y-3">
           <div className="grid grid-cols-2 gap-2">
             <div>
               <label className="text-sm text-gray-600">Bill Type</label>
-              <select value={billType} onChange={(e) => setBillType(e.target.value)} className="w-full border rounded-lg p-2 mt-1">
+              <select value={billType} onChange={(e) => setBillType(e.target.value)} className="w-full border rounded-xl p-3 mt-1 text-base">
                 <option value="retail">Retail</option>
                 <option value="wholesale">Wholesale</option>
               </select>
             </div>
             <div>
-              <label className="text-sm text-gray-600">Payment Type</label>
-              <select value={paymentType} onChange={(e) => setPaymentType(e.target.value)} className="w-full border rounded-lg p-2 mt-1">
+              <label className="text-sm text-gray-600">Payment</label>
+              <select value={paymentType} onChange={(e) => setPaymentType(e.target.value)} className="w-full border rounded-xl p-3 mt-1 text-base">
                 <option value="cash">Cash</option>
-                <option value="upi">UPI / PhonePe</option>
+                <option value="upi">UPI</option>
                 <option value="udhaar">Udhaar</option>
               </select>
             </div>
           </div>
           <div>
             <label className="text-sm text-gray-600">Customer (optional)</label>
-            <select name="patientId" className="w-full border rounded-lg p-2 mt-1">
-              <option value="">-- Walk-in Customer --</option>
+            <select name="patientId" className="w-full border rounded-xl p-3 mt-1 text-base">
+              <option value="">-- Walk-in --</option>
               {patients.map((p) => (
                 <option key={p.id} value={p.id}>{p.name} | {p.mobile}</option>
               ))}
@@ -153,7 +153,7 @@ export default function NewSale() {
             ).slice(0, 10);
 
             return (
-              <div key={index} className="border rounded-lg p-3 space-y-2">
+              <div key={index} className="border rounded-xl p-3 space-y-3">
                 <div className="relative" ref={el => dropdownRefs.current[index] = el}>
                   <input
                     type="text"
@@ -164,48 +164,48 @@ export default function NewSale() {
                       const d = [...dropdowns]; d[index] = true; setDropdowns(d);
                     }}
                     onFocus={() => { const d = [...dropdowns]; d[index] = true; setDropdowns(d); }}
-                    className="w-full border rounded-lg p-2"
+                    className="w-full border rounded-xl p-3 text-base"
                   />
                   {dropdowns[index] && filtered.length > 0 && (
-                    <div className="absolute z-50 w-full bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    <div className="absolute z-50 w-full bg-white border rounded-xl shadow-lg max-h-52 overflow-y-auto">
                       {filtered.map(m => (
                         <div
                           key={m.id}
                           onClick={() => handleMedicineSelect(index, m)}
-                          className="px-3 py-2 hover:bg-blue-50 cursor-pointer text-sm"
+                          className="px-4 py-3 hover:bg-blue-50 cursor-pointer"
                         >
-                          <span className="font-semibold">{m.name}</span>
-                          <span className="text-gray-400 ml-2">Stock: {m.stock} | Rs. {m.salePrice}</span>
+                          <p className="font-semibold text-gray-800">{m.name}</p>
+                          <p className="text-sm text-gray-400">Stock: {m.stock} | Rs. {m.salePrice}</p>
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
 
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-xs text-gray-500">Qty</label>
+                    <label className="text-xs text-gray-500">Quantity</label>
                     <input type="number" min={1} value={item.quantity}
                       onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
-                      className="w-full border rounded-lg p-2" />
+                      className="w-full border rounded-xl p-3 text-base mt-1" />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500">Free</label>
+                    <label className="text-xs text-gray-500">Free Qty</label>
                     <input type="number" min={0} value={item.freeQty}
                       onChange={(e) => handleItemChange(index, "freeQty", e.target.value)}
-                      className="w-full border rounded-lg p-2" />
+                      className="w-full border rounded-xl p-3 text-base mt-1" />
                   </div>
                   <div>
                     <label className="text-xs text-gray-500">Rate</label>
                     <input type="number" value={item.rate}
                       onChange={(e) => handleItemChange(index, "rate", e.target.value)}
-                      className="w-full border rounded-lg p-2" />
+                      className="w-full border rounded-xl p-3 text-base mt-1" />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500">Disc %</label>
+                    <label className="text-xs text-gray-500">Discount %</label>
                     <input type="number" min={0} max={100} value={item.discount}
                       onChange={(e) => handleItemChange(index, "discount", e.target.value)}
-                      className="w-full border rounded-lg p-2" />
+                      className="w-full border rounded-xl p-3 text-base mt-1" />
                   </div>
                 </div>
 
@@ -215,27 +215,27 @@ export default function NewSale() {
                       <label className="text-xs text-gray-500">SGST %</label>
                       <input type="number" value={item.sgst}
                         onChange={(e) => handleItemChange(index, "sgst", e.target.value)}
-                        className="w-full border rounded-lg p-2" />
+                        className="w-full border rounded-xl p-3 text-base mt-1" />
                     </div>
                     <div>
                       <label className="text-xs text-gray-500">CGST %</label>
                       <input type="number" value={item.cgst}
                         onChange={(e) => handleItemChange(index, "cgst", e.target.value)}
-                        className="w-full border rounded-lg p-2" />
+                        className="w-full border rounded-xl p-3 text-base mt-1" />
                     </div>
                   </div>
                 )}
 
-                <div className="flex justify-between items-center">
-                  <p className="text-sm font-semibold text-green-600">Rs. {Number(item.amount).toFixed(2)}</p>
+                <div className="flex justify-between items-center pt-1">
+                  <p className="text-base font-bold text-green-600">Rs. {Number(item.amount).toFixed(2)}</p>
                   {items.length > 1 && (
-                    <button type="button" onClick={() => removeItem(index)} className="text-red-400 text-sm">Remove</button>
+                    <button type="button" onClick={() => removeItem(index)} className="text-red-400 text-sm px-3 py-1 border border-red-300 rounded-lg">Remove</button>
                   )}
                 </div>
               </div>
             );
           })}
-          <button type="button" onClick={addItem} className="w-full border-2 border-dashed border-blue-300 text-blue-500 rounded-lg p-2">
+          <button type="button" onClick={addItem} className="w-full border-2 border-dashed border-blue-300 text-blue-500 rounded-xl p-3 text-base">
             + Add Item
           </button>
         </div>
@@ -251,13 +251,13 @@ export default function NewSale() {
               </div>
             </>
           )}
-          <div className="flex justify-between font-bold text-lg pt-1 border-t">
+          <div className="flex justify-between font-bold text-xl pt-2 border-t">
             <p>Total</p>
             <p className="text-blue-700">Rs. {totalAmount.toFixed(2)}</p>
           </div>
         </div>
 
-        <button type="submit" disabled={loading} className="w-full bg-blue-600 text-white rounded-lg p-3 font-semibold">
+        <button type="submit" disabled={loading} className="w-full bg-blue-600 text-white rounded-xl p-4 font-bold text-lg">
           {loading ? "Saving..." : "Generate Bill"}
         </button>
       </form>
